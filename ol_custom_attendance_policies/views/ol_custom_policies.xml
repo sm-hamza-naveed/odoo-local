@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+	<data>
+		<record id="hr_workingschedules_inherited_view"
+			model="ir.ui.view">
+			<field name="name">Inherited view of working schedules</field>
+			<field name="model">resource.calendar</field>
+			<field name="inherit_id" ref="resource.resource_calendar_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//page[@name='working_hours']" position="after">
+                    <page name="attendence_policy" string="Attendence Policies">
+
+                        <div class="col-12">
+                            <h3 style="text-align:left;text-decoration:underlined;">In Policy</h3>
+                        </div>
+                        
+                        <field name="in_policy_ids" nolabel="1">
+                            <tree editable="bottom">
+                                <field name="sequence" widget="handle"/>
+                                <field name="time_from"  widget="timepicker" />
+                                <field name="time_to" widget="timepicker" />
+                                <field name="status"/>
+                            </tree>
+                        </field>
+                        
+                        <div class="col-12">
+                            <h3 style="text-align:left;text-decoration:underlined;">Out Policy</h3>
+                        </div>
+                        
+                        <field name="out_policy_ids" nolabel="1">
+                            <tree editable="bottom">
+                                <field name="sequence" widget="handle"/>
+                                <field name="time_from" widget="timepicker" invisible="1"/>
+                                <field name="time_to" widget="timepicker" string="Hours To"/>
+                                <field name="status"/>
+                            </tree>
+                        </field>
+
+                    </page>
+                </xpath>
+			</field>
+		</record>
+
+         <record id="view_attendance_tree_inherit" model="ir.ui.view">
+            <field name="name">hr.attendance.view.tree.inherit</field>
+            <field name="model">hr.attendance</field>
+            <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='check_out']" position="after">
+                        <field name="status" />
+                        <field name="day" />
+                        <!-- <field name="overtime" readonly="1" force_save="1"/>
+                        <field name="is_sheduler" invisible="1"/>
+                        <field name="day" invisible="0"/>
+                        <field name="is_change_status" invisible="1"/> -->
+                    </xpath>
+                </data>
+            </field>
+        </record>
+
+
+         <record id="hr_holidays_hr_leave_view_form_manager_inherit" model="ir.ui.view">
+            <field name="name">hr.holidays.hr.leave.view.form.manager.inherit</field>
+            <field name="model">hr.leave</field>
+            <field name="inherit_id" ref="hr_holidays.hr_leave_view_form_manager"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='holiday_status_id']" position="after">
+                        <field name="is_auto" string="Is Auto" />
+                    </xpath>
+                </data>
+            </field>
+        </record>
+
+	</data>
+</odoo>
+

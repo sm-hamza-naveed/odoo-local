@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_damaged_products_form" model="ir.ui.view">
+        <field name="name">damaged.products.form</field>
+        <field name="model">damaged.products</field>
+        <field name="arch" type="xml">
+            <form string="Damaged Products" class="o_sale_order">
+                <header>
+                    <button name="action_confirm" data-hotkey="v"
+                        string="Confirm" type="object"
+                        attrs="{'invisible': [('state', 'in', ['confirm'])]}" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1" />
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="sales_ref" options="{'no_create': True}" />
+                    </group>
+              
+                    <notebook>
+                        <page string="Damaged Lines" name="damage_lines">
+                            <field
+                                name="damaged_line"
+                                widget="section_and_note_one2many"
+                                mode="tree"
+                                attrs="{'readonly': [('state', 'in', ('done','cancel'))]}"
+                            >
+                                <form>
+                                    <field name="display_type" invisible="1"/>
+                                    <!--
+                                        We need the sequence field to be here for new lines to be added at the correct position.
+                                        TODO: at some point we want to fix this in the framework so that an invisible field is not required.
+                                    -->
+                                    <field name="sequence" invisible="1"/>
+                                    <group>
+                                        <group attrs="{'invisible': [('display_type', '!=', False)]}">
+                                            <field name="product_id"
+                                                attrs="{
+                                                    'required': [('display_type', '=', False)],
+                                                }"
+                                                force_save="1"
+                                                widget="many2one_barcode"
+                                               />
+                                            <field name="price_subtotal" invisible="1"/>
+                                            <label for="product_uom_qty"/>
+                                            <field name="product_uom_qty"/>
+                                            <field name="price_unit"/>
+                                            <field name="sequence" invisible="1"/>
+                                        </group>
+                                    </group>
+                                </form>
+                                <tree
+                                    string="Damaged Lines"
+                                    editable="bottom"
+                                >
+                                    <control>
+                                        <create name="add_product_control" string="Add a product"/>
+                                        <create name="add_section_control" string="Add a section" context="{'default_display_type': 'line_section'}"/>
+                                        <create name="add_note_control" string="Add a note" context="{'default_display_type': 'line_note'}"/>
+                                    </control>
+
+                                    <field name="sequence" widget="handle" />
+                                    <!-- We do not display the type because we don't want the user to be bothered with that information if he has no section or note. -->
+                                    <field name="display_type" invisible="1"/>
+                                    <field
+                                        name="product_id"
+                                        attrs="{
+                                            'required': [('display_type', '=', False)],
+                                        }"
+                                        force_save="1"
+                                        widget="product_configurator"
+                                    />
+                                  
+                                    <field name="name" string="Description" widget="section_and_note_text" optional="show"/>
+                                    <field
+                                        name="product_uom_qty"
+                                    />
+                                    <field
+                                        name="price_unit"
+                                        optional="hide"
+                                    />
+                                    
+                                    <field name="price_subtotal" widget="monetary"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="company_id" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_damaged_products_tree" model="ir.ui.view">
+        <field name="name">damaged.products.tree</field>
+        <field name="model">damaged.products</field>
+        <field name="arch" type="xml">
+            <tree string="Damaged Products" class="o_sale_order">
+                <field name="name" string="Name" readonly="1" decoration-bf="1" />
+                <field name="sales_ref" string="Sales Reference" readonly="1" decoration-bf="1" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_view_damaged_products" model="ir.actions.act_window">
+        <field name="name">Damaged Products</field>
+        <field name="res_model">damaged.products</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_damaged_products_tree" />
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new Damaged Product
+            </p>
+            <p>
+                You must define a reference sales order
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="sale_order_menu_damaged"
+        name="Damaged"
+        parent="sale.sale_menu_root"
+        sequence="2"
+        action="action_view_damaged_products" />
+</odoo>

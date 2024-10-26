@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <template id="report_cash_memo">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="doc" t-value="o.with_context({'lang':o.partner_id.lang})" />
+                    <div class="page">
+                        <div class="oe_structure" />
+                        <div style="margin-left: 500px; margin-bottom: 10px;">
+                            <div>
+                                <img t-if="doc.company_id.logo" t-att-src="image_data_uri(doc.company_id.logo)" style="width: 120px; height:120px;" alt="Logo"/>
+                            </div>
+                        </div>
+                        <div class="row" style="border: 1px solid black;">
+                            <div class="col-12 text-center">
+                                <h6>
+                                    <span t-esc="o.company_id.name" />
+                                </h6>
+                                <h6>
+                                    <span t-esc="doc.company_id.street" />
+                                </h6>
+                                <h6>Cash Memo</h6>
+                            </div>
+                        </div>
+                        <div style="height: 20px;" />
+                        <div class="row">
+                            <div class="col-6">
+                                <t t-if="len(doc.invoice_ids) &gt; 0">
+                                    <span>Invoice Number: <span
+                                            t-field="doc.invoice_ids[0].name" /></span>
+                                </t>
+                                <t t-else="">
+                                </t>
+                                <p>Payment: <span t-field="doc.payment_mode" /></p>
+                                <p>Party Name: <span t-field="doc.partner_id.name" /></p>
+                                <p>Address: <span t-field="doc.partner_id.contact_address" /></p>
+                                <p>Contact: <span t-field="doc.partner_id.name" /></p>
+                            </div>
+                            <div class="col-6" style="margin-left: 250px;">
+                                <p>Date:<span t-field="doc.date_order" /></p>
+                                <p>Order Broker: <span t-field="doc.order_booker.name" /></p>
+                                <p>Sales Agent: <span t-field="doc.sales_agent.name" /></p>
+                                <p>Load No: <span t-field="doc.name" /></p>
+                            </div>
+                        </div>
+                        <style> .custom-table { <!--background:
+                             
+                        linear-gradient(to bottom, #ffffff, #f2f2f2);--> box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); border:
+                            2px solid #dddddd; /* Adjust border color and width as needed */
+                            border-collapse: separate; border-radius: 10px; /* Adjust border radius
+                            as needed */ } .custom-table th, .custom-table td { border: 1px solid
+                            #dddddd; /* Adjust border color and width as needed */ padding: 7px; /*
+                            Adjust padding as needed */ .table-condensed>thead>tr>th,
+                            .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th,
+                            .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td,
+                            .table-condensed>tfoot>tr>td{ padding: 1px; } } </style>
+                        <table class="table p-1" style="text-align: right;">
+                            <thead>
+                                <tr>
+                                    <th>S#</th>
+                                    <th>Sku Code</th>
+                                    <th colspan="4">Description of goods </th>
+                                    <th>Pack CTN</th>
+                                    <th>T.P UNITS</th>
+                                    <th>Ctn</th>
+                                    <th>Unit</th>
+                                    <th>Free unit</th>
+                                    <th>Total Unit</th>
+                                    <th>Gross Amount</th>
+                                    <th>Discount Value</th>
+                                    <th>Net Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="counter" t-value="0" />
+                                <t t-set="ctn_count" t-value="0" />
+                                <t t-set="tp_count" t-value="0" />
+                                <t t-set="unit_count" t-value="0" />
+                                <t t-set="free_unit_count" t-value="0" />
+                                <t t-set="total_unit_count" t-value="0" />
+                                <t t-set="gross_amount_count" t-value="0" />
+                                <t t-set="discount_amount_count" t-value="0" />
+                                <t t-set="net_amount_count" t-value="0" />
+                                <t t-foreach="doc.order_line" t-as="line">
+                                    <t t-set="counter" t-value="counter+1" />
+                                    <t t-set="tp_count"
+                                        t-value="tp_count + (round(line.product_id.lst_price / float(line.product_id.uom_id.name.split()[0]), 3))" />
+                                    <t t-set="ctn_count"
+                                        t-value="ctn_count + (line.product_uom_qty)" />
+                                    <t t-set="unit_count"
+                                        t-value="unit_count + (float(line.product_id.uom_id.name.split()[0]))" />
+                                    <t t-set="free_unit_count" t-value="free_unit_count + (0)" />
+                                    <t t-set="total_unit_count"
+                                        t-value="total_unit_count + (line.product_uom_qty * float(line.product_id.uom_id.name.split()[0]))" />
+                                    <t t-set="gross_amount_count"
+                                        t-value="gross_amount_count + (line.product_uom_qty * line.price_unit)" />
+                                    <t t-set="discount_amount_count"
+                                        t-value="discount_amount_count + ((line.product_uom_qty * line.price_unit) - line.price_subtotal)" />
+                                    <t t-set="net_amount_count"
+                                        t-value="net_amount_count + (line.price_subtotal)" />
+                                    <tr>
+                                        <td>
+                                            <span t-esc="counter" />
+                                        </td>
+                                        <td>
+                                            <span t-field="line.product_id.default_code" />
+                                        </td>
+                                        <td colspan="4" style="text-align: left;">
+                                            <span t-field="line.product_id.name" />
+                                        </td>
+                                        <td>
+                                            <span t-field="line.product_uom" />
+                                        </td>
+                                        <td>
+                                            <span
+                                                t-esc="round(line.product_id.lst_price / float(line.product_id.uom_id.name.split()[0]), 3)" />
+                                        </td>
+                                        <td>
+                                            <span t-field="line.product_uom_qty" />
+                                        </td>
+                                        <td>
+                                            <span
+                                                t-esc="float(line.product_id.uom_id.name.split()[0])" />
+                                        </td>
+                                        <td>0</td>
+                                        <td>
+                                            <span
+                                                t-esc="line.product_uom_qty * float(line.product_id.uom_id.name.split()[0])" />
+                                        </td>
+                                        <td>
+                                            <span t-esc="line.product_uom_qty * line.price_unit" />
+                                        </td>
+                                        <td>
+                                            <span
+                                                t-esc="round((line.product_uom_qty * line.price_unit) - line.price_subtotal, 3)" />
+                                        </td>
+                                        <td>
+                                            <span t-esc="line.price_subtotal" />
+                                        </td>
+                                    </tr>
+                                </t>
+                                <tr>
+                                    <td colspan="7" style="text-align: center;">Total</td>
+                                    <td>
+                                        <span t-esc="round(tp_count,3)" />
+                                    </td>
+                                    <td>
+                                        <span t-esc="ctn_count" />
+                                    </td>
+                                    <td>
+                                        <span t-esc="float(unit_count)" />
+                                    </td>
+                                    <td>
+                                        <span t-esc="free_unit_count" />
+                                    </td>
+                                    <td>
+                                        <span t-esc="float(total_unit_count)" />
+                                    </td>
+                                    <td>
+                                        <span t-esc="gross_amount_count" />
+                                    </td>
+                                    <td>
+                                        <span t-esc="round(discount_amount_count, 3)" />
+                                    </td>
+                                    <td>
+                                        <span t-esc="net_amount_count" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr style="border-bottom: 1px solid black;">
+                                    <td colspan="10" style="background-color: none;" />
+                                    <td colspan="2"
+                                        style="text-align: right; background-color: lightgrey;">
+                                        Discount</td>
+                                    <td style="background-color: lightgrey;" />
+                                    <td style="background-color: lightgrey;" />
+                                    <td
+                                        style="border-bottom: 1px solid black; background-color: lightgrey;">
+                                        <span t-field="doc.amount_discount" />
+                                    </td>
+                                </tr>
+                                <tr
+                                    style="border-top: none; border-bottom: none; border-style: hidden;">
+                                    <td colspan="10" style="background-color: none;" />
+                                    <td colspan="2"
+                                        style="text-align: right; background-color: lightgrey;">Net
+                                        Amount</td>
+                                    <td style="background-color: lightgrey;" />
+                                    <td style="background-color: lightgrey;" />
+                                    <td
+                                        style="border-bottom: 1px double black; background-color: lightgrey;">
+
+                                        <span t-field="doc.amount_total" />
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

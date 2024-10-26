@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <template id="load_pass_report">
+        <t t-call="web.html_container">
+            <t t-set="products" t-value="{}" />
+            <t t-set="load_no" t-value="''" />
+            <t t-set="total_discount" t-value="0" />
+            <t t-set="total_damaged_amount" t-value="0" />
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="products" t-value="doc._update_product_vals(products)" />
+                <t t-set="damaged_amount" t-value="doc._get_damaged_amount()" />
+                <t t-if="load_no == ''">
+                    <t t-set="load_no" t-value="doc.name" />
+                </t>
+                <t t-else="">
+                    <t t-set="load_no" t-value="load_no + ', ' + doc.name" />
+                </t>
+                <t t-set="total_discount" t-value="total_discount + doc.discount_rate" />
+                <t t-set="total_damaged_amount" t-value="total_damaged_amount + damaged_amount" />
+            </t>
+            <t t-call="web.basic_layout">
+                <div class="page">
+                    <div class="oe_structure" />
+                    <div style="margin-left: 500px; margin-bottom: 10px;">
+                        <div>
+                            <img t-if="doc.company_id.logo" t-att-src="image_data_uri(doc.company_id.logo)" style="width: 120px; height:120px;" alt="Logo"/>
+                        </div>
+                    </div>
+                    <div class="row" style="border: 1px solid black; margin-bottom: 5px;">
+                        <div class="col-12 text-center">
+                            <h6>
+                                <span t-esc="doc.company_id.name" />
+                            </h6>
+                            <h6>
+                                <span t-esc="doc.company_id.street" />
+                            </h6>
+                            <h6>Load Pass</h6>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <p>Order Booker: <span t-field="doc.order_booker" /><span
+                                    t-field="doc.order_booker.phone" /></p>
+                            <p>Sales Agent: <span t-field="doc.sales_agent" /><span
+                                    t-field="doc.sales_agent.phone" /></p>
+                            <p>Load No: <span t-esc="load_no" /></p>
+                        </div>
+                        <div class="col-3"
+                            style="display: flex; flex-direction: column; justify-content: flex-end; align-items: center;">
+                            <!--<p
+                            style="margin: 0;">Bills Quantity # 3 </p>-->
+                        </div>
+                        <div class="col-6" style="text-align: bottom;">
+                            <!--<br/>-->
+                            <p>Date: <span t-field="doc.date_order" /></p>
+                            <p>Gross Amount: <span
+                                    t-esc="round(sum([products[product_id]['amount'] for product_id in products]), 3)" /></p>
+                            <p>Discount: <span t-esc="total_discount" /></p>
+                            <p>Damaged Amount: <span t-esc="total_damaged_amount" /></p>
+                            <p>Net Amount: <span
+                                t-esc="round(sum([products[product_id]['amount'] for product_id in products]) - total_damaged_amount, 3)" /></p>
+                            <!-- <t t-if="">
+                                <p>Net Amount: <span
+                                    t-esc="(sum([products[product_id]['sold'] * products[product_id]['price_unit'] for product_id in
+                            products]) - (sum([products[product_id]['sold'] *
+                            products[product_id]['price_unit'] for product_id in products]) *
+                            total_discount/100)) - total_damaged_amount" /></p>
+                            </t>
+                            <t t-else="">
+                                <p>Net Amount: <span
+                                    t-esc="(sum([products[product_id]['sold'] * products[product_id]['price_unit'] for product_id in
+                            products]) - (sum([products[product_id]['sold'] *
+                            products[product_id]['price_unit'] for product_id in products]) *
+                            total_discount/100)) - total_damaged_amount" /></p>
+                            </t> -->
+                        </div>
+                    </div>
+
+                    <style> .custom-table { <!--background:
+                        linear-gradient(to bottom, #ffffff, #f2f2f2);--> box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); border: 2px
+                        solid #dddddd; /* Adjust border color and width as needed */
+                        border-collapse: separate; border-radius: 10px; /* Adjust border radius as
+                        needed */ } .custom-table th, .custom-table td { border: 1px solid #dddddd;
+                        /* Adjust border color and width as needed */ padding: 1px; /* Adjust
+                        padding as needed */ } </style>
+
+                    <table class="table custom-table" style="text-align: right; ">    <!--border-collapse:
+                        collapse;-->
+                        <thead>
+                            <tr>
+                                <th>S No.</th>
+                                <th>Code</th>
+                                <th colspan="4">Products</th>
+                                <th>Pack</th>
+                                <th>T.P</th>
+                                <th>Net T.P.</th>
+                                <th>Ctn</th>
+                                <th>Pcs</th>
+                                <th>Rtg</th>
+                                <th>Damage</th>
+                                <th>Sch</th>
+                                <th>Sold</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="counter" t-value="0" />
+                            <t t-set="ctn_count" t-value="0" />
+                            <t t-set="rtg_count" t-value="0" />
+                            <t t-set="pcs_count" t-value="0" />
+                            <t t-set="sold_count" t-value="0" />
+                            <t t-set="amount_count" t-value="0" />
+                            <t t-foreach="products" t-as="product_id">
+                                <t t-set="counter" t-value="counter+1" />
+                                <t t-set="ctn_count" t-value="ctn_count+products[product_id]['ctn']" />
+                                <t t-set="rtg_count"
+                                    t-value="rtg_count+(products[product_id]['rtg'])" />
+                                <t t-set="pcs_count"
+                                    t-value="pcs_count+(products[product_id]['pcs'])" />
+                                <t t-set="sold_count"
+                                    t-value="sold_count+products[product_id]['sold']" />
+                                <t t-set="amount_count"
+                                    t-value="amount_count+(products[product_id]['amount'])" />
+                                <tr>
+                                    <td>
+                                        <span t-esc="counter" />
+                                    </td>
+                                    <td>
+                                        <span t-esc="products[product_id]['code']" />
+                                    </td>
+                                    <td colspan="4" style="text-align: left;">
+                                        <span t-esc="products[product_id]['name']" />
+                                    </td>
+                                    <td>
+                                        <span t-esc="products[product_id]['pack']" />
+                                    </td>
+                                    <td>
+                                        <span t-esc="products[product_id]['tp']" />
+                                    </td>
+                                    <td>
+                                        <span t-esc="products[product_id]['net_tp']" />
+                                    </td>
+                                    <td>
+                                        <span t-esc="products[product_id]['ctn']" />
+                                    </td>
+                                    <td>
+                                        <span t-esc="products[product_id]['pcs']" />
+                                    </td>
+                                    <td>
+                                        <span t-esc="products[product_id]['rtg']" />
+                                    </td>
+                                    <td>
+                                        <span t-esc="products[product_id]['damage']" />
+                                    </td>
+                                    <td>
+                                        <span t-esc="products[product_id]['sch']" />
+                                    </td>
+                                    <td>
+                                        <span t-esc="products[product_id]['sold']" />
+                                    </td>
+                                    <td>
+                                        <span t-esc="products[product_id]['amount']" />
+                                    </td>
+                                </tr>
+                            </t>
+                            <tr>
+                                <td colspan="9" style="text-align: center;">Total</td>
+                                <td>
+                                    <span t-esc="ctn_count" />
+                                </td>
+                                <td>
+                                    <span t-esc="pcs_count" />
+                                </td>
+                                <td>
+                                    <span t-esc="rtg_count" />
+                                </td>
+                                <td />
+                                <td />
+                                <td>
+                                    <span t-esc="sold_count" />
+                                </td>
+                                <td>
+                                    <span t-esc="amount_count" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

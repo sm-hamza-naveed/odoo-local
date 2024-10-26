@@ -1,0 +1,28 @@
+<odoo>
+    <record id="view_hr_contract_form_inherit" model="ir.ui.view">
+        <field name="name">hr.contract.form.inherit</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='yearly_advantages']" position="inside">
+                <field name="travel_allowance"/>
+                <field name="bonus"/>
+                <field name="incentive_commission"/>
+                <field name="previous_salary"/>
+                <field name="salary_arrears"/>
+            </xpath>
+        </field>
+    </record>
+
+     <record id="view_hr_payslip_form_inherit" model="ir.ui.view">
+        <field name="name">hr.payslip.inherit</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='payslip_run_id']" position="after">
+                <field name="absent"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- <data>
+        <record id="custom_module_new_salary_rule" model="hr.salary.rule">
+            <field name="name">New Salary Rule</field>
+            <field name="code">76</field>
+            <field name="sequence">17</field>
+            <field name="category_id" ref="hr_payroll.BASIC"/>
+            <field name="struct_id" ref="hr_payroll.BASIC"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.compute_salary_rule()</field>
+            <field name="appears_on_payslip">True</field>
+        </record> 
+    </data> -->
+</odoo>

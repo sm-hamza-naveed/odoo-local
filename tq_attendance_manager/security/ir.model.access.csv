@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_late_policy,late.policy,model_late_policy,,1,1,1,1
+access_late_in_policy,late.in.policy,model_late_in_policy,,1,1,1,1
+access_early_policy,early.policy,model_early_policy,,1,1,1,1
+access_early_out_policy,early.out.policy,model_early_out_policy,,1,1,1,1

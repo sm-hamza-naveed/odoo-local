@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <data>
+        <record id="hr_attendance_form_inherit" model="ir.ui.view">
+            <field name="name">Form view of Attendance</field>
+            <field name="model">hr.attendance</field>
+            <field name="inherit_id" ref="hr_attendance.hr_attendance_view_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//sheet" position="replace">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="employee_id"/>
+                                <field name="check_in" />
+                                <field name="check_out"/>
+                                <field name="worked_hours" widget="float_time"/>
+                            </group>
+                            <group>
+                                <field name="status"/>
+                                <field name="attendance_status"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="hr_attendance_tree_inherit" model="ir.ui.view">
+            <field name="name">Tree view of Attendance</field>
+            <field name="model">hr.attendance</field>
+            <field name="inherit_id" ref="hr_attendance.view_attendance_tree" />
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="replace">
+                    <tree string="Employee attendances">
+                        <field name="employee_id"/>
+                        <field name="check_in"/>
+                        <field name="check_out"/>
+                        <field name="status"/>
+                        <field name="attendance_status"/>
+                        <field name="worked_hours" widget="float_time"/>
+                    </tree>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

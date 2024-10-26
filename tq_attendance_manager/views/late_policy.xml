@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_late_policy_form" model="ir.ui.view">
+        <field name="name">late.policy.form</field>
+        <field name="model">late.policy</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="name"/>
+                </group>
+                <field name="in_policy_ids">
+                    <tree editable="bottom">
+                        <field name="name"/>
+                        <field name="apply_after" widget="float_time"/>
+                        <field name="rate"/>
+                        <field name="status"/>
+                    </tree>
+                </field>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_late_policy_tree" model="ir.ui.view">
+        <field name="name">late.policy.tree</field>
+        <field name="model">late.policy</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_late_policy" model="ir.actions.act_window">
+        <field name="name">Late Policy</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">late.policy</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem name="Attendance Policies"
+              id="attendance_policy_menu"
+              sequence="11"
+              parent="hr_attendance.menu_hr_attendance_root"
+/>
+
+    <menuitem name="Late Policy"
+              id="late_policy_menu"
+              sequence="11"
+              parent="tq_attendance_manager.attendance_policy_menu"
+              action="action_late_policy"/>
+</odoo>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem id="inventory_report_menu_action" name="Inventory Report" action="stock.action_view_quants"/>
+</odoo>

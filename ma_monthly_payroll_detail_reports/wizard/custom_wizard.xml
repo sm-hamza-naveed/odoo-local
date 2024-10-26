@@ -1,0 +1,62 @@
+<odoo>
+
+    <record model="ir.ui.view" id="view_report_monthly_payroll_detail">
+        <field name="name">monthly.payroll.detail.report.wizard.form</field>
+        <field name="model">monthly.payroll.detail.report.wizard</field>
+        <field name="arch" type="xml">
+
+            <form string="Monthly Payroll Report Detailed">
+                <group string="Date">
+                    <group>
+                        <field name="from_date"/>
+                    </group>
+                    <group>
+                        <field name="to_date"/>
+                    </group>
+                </group>
+
+              
+                <footer>
+                    <!-- <button name="action_print_report" type="object" string="Print PDF" class="btn-primary" /> -->
+                    <button name="action_print_excel_report" type="object" string="Print XLSX" class="btn-primary" />
+
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+
+    <record id="view_excel" model="ir.ui.view">
+        <field name="name">view.stock.excel </field>
+        <field name="model">customer.invoices.report.excel</field>
+        <field name="arch" type="xml">
+        <form string="Generate Excel File">
+            <group>
+                <field name="file_name" invisible="1" />
+                <field name="excel_file" readonly="1" filename="file_name" />
+            </group>
+            <footer>
+                <button string="Cancel" class="oe_link" special="cancel" />
+            </footer>
+        </form>
+        </field>
+    </record>
+
+    <record id="action_print_detail_monthly_payroll_report" model="ir.actions.act_window">
+        <field name="name">Monthly Payroll Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">monthly.payroll.detail.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_report_monthly_payroll_detail"/>
+        <field name="target">new</field>
+    </record>
+
+
+    <menuitem id="menu_detail_monthly_payroll_report" name="Detail" parent="hr_payroll.menu_hr_payroll_report" sequence="30"/>
+    <menuitem id="menu_action_Detailed_report" sequence="1" name="Monthly Payroll Report Detailed" action="action_print_detail_monthly_payroll_report" parent="menu_detail_monthly_payroll_report"/>
+
+
+
+</odoo> 

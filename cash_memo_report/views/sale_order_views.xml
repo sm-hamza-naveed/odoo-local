@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_order_form_sale_order" model="ir.ui.view">
+        <field name="name">sale.order.cash.memo.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//field[@name='partner_id']"
+                position="after">
+                <field name="payment_mode" />
+                <field name="sales_agent" />
+                <field name="order_booker" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_order_form_account_move" model="ir.ui.view">
+        <field name="name">account.move.cash.memo.form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//field[@name='payment_reference']"
+                position="after">
+                <field name="sales_agent" />
+                <field name="order_booker" />
+                <field name="payment_mode" />
+            </xpath>
+            <xpath expr="//field[@name='tax_totals_json']" position="after">
+                <field name="amount_damaged" attrs="{'invisible': [('company_id', 'not in', [2])]}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

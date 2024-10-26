@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="late_records_tree_view" model= "ir.ui.view">
+        <field name="name">late.record.tree</field>
+        <field name="model">late.record</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="date" />
+                <field name="employee"/>
+                <field name="late"/>
+            </tree>
+        </field>
+    </record>
+
+     <record model="ir.actions.act_window" id="action_late_records">
+        <field name = "name">Late Records</field>
+        <field name = "type">ir.actions.act_window</field>
+        <field name= "res_model">late.record</field>
+        <field name = "view_mode">tree</field>
+    </record>
+
+    <menuitem id='menu_late_records'
+              parent="hr_attendance.menu_hr_attendance_root"
+              action="action_late_records"
+              name="Late Records"
+              sequence='4'/>
+</odoo>
