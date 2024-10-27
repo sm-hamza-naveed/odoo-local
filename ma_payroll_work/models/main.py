@@ -226,3 +226,4 @@ class HRSalaryRule(models.Model):
     _inherit = 'hr.salary.rule'
 
     category_code = fields.Char(related='category_id.code', string='Category Code')
+    

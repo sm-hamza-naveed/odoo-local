@@ -13,7 +13,7 @@
     'website': '',
     'images': [
     ],
-    'depends': ["base"
+    'depends': ["base", "ma_payroll_work"
     ],
     'data': [
         # "views/view.xml",

@@ -24,42 +24,32 @@ class MonthlyPayrollDetailReportWizard(models.TransientModel):
     _name="monthly.payroll.detail.report.wizard"
     _description='Monthly Payroll Detail reports Wizard'
 
-    # selected_month= fields.Many2many('billing.month', string='Select Month')
     from_date = fields.Date(string='From')
     to_date = fields.Date(string='To')
-    # all_branch = fields.Many2many('pos.config', string='Branch')
 
     def get_custom_info(self):
-        line=[]
         custom_domain = []
-        # custom_domain.append(('picking_type_id','=',2))
-        # custom_domain.append(('state','=','done'))
 
         if self.from_date:
             custom_domain.append(('date_from',">=",self.from_date))
         if self.to_date:
             custom_domain.append(('date_from',"<=",self.to_date))
-        # if self.all_branch:
-        #     lst_id = []
-        #     for branch in self.all_branch:
-        #         lst_id.append(branch.id)
-        #     custom_domain.append(('config_id',"in",lst_id))
         
-        line_ids = self.env['hr.payslip'].search(custom_domain)
-        # line_ids = line_ids.sorted(lambda o : o.config_id.name)
+        payslips = self.env['hr.payslip'].search(custom_domain)
 
-        return line_ids
+        return payslips
+    
     
     def action_print_excel_report(self,datas=None):
         datas=self.get_custom_info()
-        # raise UserError(str(datas))
         
 
         excel_encode = io.BytesIO()
+        formatted_date = self.from_date.strftime("%b-%Y")
   
-        filename = "Monthly Payroll Analysis Sheet - Detailed- " + str(datetime.now().strftime("%d-%m-%Y  %H:%M:%S"))+".xlsx"
+        filename = "Monthly Payroll Analysis Sheet Detailed - " + str(formatted_date) + ".xlsx"
         workbook = xlsxwriter.Workbook(excel_encode)
-        # worksheet = workbook.add_sheet('Customer Invoices')
+
         sheet = workbook.add_worksheet('Monthly Payroll Analysis Sheet - Detailed')
         header = workbook.add_format({'bold': True, 'align':'center','size': 11,'bg_color': '#2a6131','font_color': 'white'})
         header_Text = workbook.add_format({'bold': True, 'align':'center','size': 11,'bg_color': '#F1D29F'})
@@ -69,10 +59,13 @@ class MonthlyPayrollDetailReportWizard(models.TransientModel):
         header_Text.set_border()
         normal_text = workbook.add_format({'align':'left','size':11})
         normal_text_number = workbook.add_format({'align':'right','size':11})
+
+        net_total_number = workbook.add_format({'align':'right','size':11,'bg_color': '#F1D29F'})
+        net_total_number.set_border()
         # sheet.write_merge(1,1,18,23, 'Additions',header_Text)
         # sheet.write_merge(1,1,24,27, 'Deletions',header_Text)
-        sheet.merge_range('S2:X2', 'Additions', header_Text)
-        sheet.merge_range('Y2:AB2', 'Deletions', header_Text)
+        sheet.merge_range('S2:W2', 'Additions', header_Text)
+        sheet.merge_range('X2:AB2', 'Deletions', header_Text)
 
 
         sheet.write(0,0,"Creative Minds Solutions (Pvt.) Ltd", header_Text)
@@ -84,7 +77,6 @@ class MonthlyPayrollDetailReportWizard(models.TransientModel):
             sheet.set_column(0,i,22)
 
        
-
         sheet.write(2,0, 'S.No', header)
         sheet.write(2,1, 'Employee Id', header)
         sheet.write(2,2, 'Employee Name', header)
@@ -99,6 +91,7 @@ class MonthlyPayrollDetailReportWizard(models.TransientModel):
         sheet.write(2,10, 'Account No.', header)
         sheet.write(2,11, 'Br. Code', header)
         sheet.write(2,12, 'Present Days', header)
+
         sheet.write(2,13, 'Basic', header)
         sheet.write(2,14, 'HRA', header)
         sheet.write(2,15, 'Utilities', header)
@@ -109,23 +102,21 @@ class MonthlyPayrollDetailReportWizard(models.TransientModel):
         sheet.write(2,20, 'Incentive / Commission', header)
         sheet.write(2,21, 'Travelling Expenses', header)
         sheet.write(2,22, 'Salary Arrears', header)
-        # sheet.write(2,24, 'Bonus', header)
-        sheet.write(2,23, 'Income Tax', header)
-        sheet.write(2,24, 'LWOP Amount', header)
-        sheet.write(2,25, 'Salary Arrears ', header)
-        sheet.write(2,26, 'Advance Salary', header)
-        sheet.write(2,27, 'Net Salary', header)
-       
 
-        inv_row=3
-        count=0
-        dis_amount_group_total=0
-        qty_group_total=0
-        cumputed_unit_price_group_total=0
-        # customers= self.get_customers()
+        sheet.write(2,23, 'Advance Salary', header)
+        sheet.write(2,24, 'Salary Arrears', header)
+        sheet.write(2,25, 'Incentive / Commission', header)
+        sheet.write(2,26, 'LWOP Amount', header)
+        sheet.write(2,27, 'Income Tax', header)
+
+        sheet.write(2,28, 'Net Salary', header)
+       
+        inv_row, count = 2, 0
+
         if len(datas)!=0:
             for line in datas:
                 count +=1
+                inv_row += 1
 
                 sheet.write(inv_row,0,count,normal_text)
                 sheet.write(inv_row,1,line.employee_id.pin if line.employee_id.pin else "",normal_text)
@@ -140,45 +131,27 @@ class MonthlyPayrollDetailReportWizard(models.TransientModel):
                 sheet.write(inv_row,10,line.employee_id.bank_account_id.bank_id.name if line.employee_id.bank_account_id.bank_id.name else "", normal_text)
                 sheet.write(inv_row,11,"", normal_text)
                 sheet.write(inv_row,12,str(30-int(line.absent)), normal_text)
-                for item in line.line_ids:
-                    if item.name.lower() =='basic salary':
-                        sheet.write(inv_row,13,item.amount, normal_text_number)
-                    elif item.name.lower() =='house rent allowance':
-                        sheet.write(inv_row,14,item.amount, normal_text_number)
-                    elif item.name.lower() =='utility allowance':
-                        sheet.write(inv_row,15,item.amount, normal_text_number)
-                    elif item.name.lower() =='medical allowance':
-                        sheet.write(inv_row,16,item.amount, normal_text_number)
-                    elif item.name.lower() =='gross salary':
-                        sheet.write(inv_row,17,item.amount, normal_text_number)
-                    elif 'sick allowance' in item.name.lower():
-                        sheet.write(inv_row,18,item.amount, normal_text_number)
-                    elif item.name.lower() =='bonus':
-                        sheet.write(inv_row,19,item.amount, normal_text_number)
-                    elif item.name.lower() =='incentive / commission':
-                        sheet.write(inv_row,20,item.amount, normal_text_number)
-                    elif item.name.lower() =='travel allowance':
-                        sheet.write(inv_row,21,item.amount, normal_text_number)
-                    elif item.name.lower() =='salary arrears':
-                        sheet.write(inv_row,22,item.amount, normal_text_number)
-                    elif item.name.lower() =='income tax':
-                        sheet.write(inv_row,23,item.amount, normal_text_number)
-                    elif item.name.lower() =='absent deduction':
-                        sheet.write(inv_row,24,item.amount, normal_text_number)
-                    elif item.name.lower() =='net salary':
-                        sheet.write(inv_row,27,item.amount, normal_text_number)
-                sheet.write(inv_row,25,"", normal_text_number)
-                sheet.write(inv_row,26,"-", normal_text_number)
-                # sheet.write(inv_row,7,, header_Text)
-                # sheet.write(inv_row,8,, header_number)
-                # sheet.write(inv_row,9, , header_Text)
-                # sheet.write(inv_row,10,,header_number)
-                # sheet.write(inv_row,11,, header_Text)
-                # sheet.write(inv_row,12,, header_number)
 
+                
+                sheet.write(inv_row, 13, line.line_ids.filtered(lambda x: x.code.upper().strip()=='BASIC').total or "-", normal_text_number)
+                sheet.write(inv_row, 14, line.line_ids.filtered(lambda x: x.code.upper().strip()=='HRA').total or "-", normal_text_number)
+                sheet.write(inv_row, 15, line.line_ids.filtered(lambda x: x.code.upper().strip()=='UA').total or "-", normal_text_number)
+                sheet.write(inv_row, 16, line.line_ids.filtered(lambda x: x.code.upper().strip()=='MA').total or "-", normal_text_number)
+                sheet.write(inv_row, 17, line.line_ids.filtered(lambda x: x.code.upper().strip()=='GS').total or "-", normal_text_number)
+                sheet.write(inv_row, 18, line.line_ids.filtered(lambda x: x.code.upper().strip()=='SA').total or "-", normal_text_number)
+                sheet.write(inv_row, 19, line.line_ids.filtered(lambda x: x.code.upper().strip()=='BONUS').total or "-", normal_text_number)
+                sheet.write(inv_row, 20, line.line_ids.filtered(lambda x: x.code.upper().strip()=='IC').total or "-", normal_text_number)
+                sheet.write(inv_row, 21, line.line_ids.filtered(lambda x: x.code.upper().strip()=='TRAVEL').total or "-", normal_text_number)
+                sheet.write(inv_row, 22, line.line_ids.filtered(lambda x: x.code.upper().strip()=='SALARYARREARS').total or "-", normal_text_number)
 
-                inv_row+=1
-                                   
+                sheet.write(inv_row, 23, line.line_ids.filtered(lambda x: x.code.upper().strip()=='PS').total or "-", normal_text_number)
+                sheet.write(inv_row, 24, line.line_ids.filtered(lambda x: x.code.upper().strip()=='SAD').total or "-", normal_text_number)
+                sheet.write(inv_row, 25, line.line_ids.filtered(lambda x: x.code.upper().strip()=='ICD').total or "-", normal_text_number)
+                sheet.write(inv_row, 26, line.line_ids.filtered(lambda x: x.code.upper().strip()=='AD').total or "-", normal_text_number)
+                sheet.write(inv_row, 27, line.line_ids.filtered(lambda x: x.code.upper().strip()=='IT').total or "-", normal_text_number)
+
+                sheet.write(inv_row, 28, line.line_ids.filtered(lambda x: x.code.upper().strip()=='NET').total or "-", net_total_number)
+
         else:
             raise UserError('No reports data found')
 
