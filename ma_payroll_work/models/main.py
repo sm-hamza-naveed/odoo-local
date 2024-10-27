@@ -6,53 +6,17 @@ from dateutil.relativedelta import relativedelta
 import json
 
 import xlsxwriter
-_
+
 from odoo.exceptions import ValidationError
 from odoo.exceptions import UserError
 from pytz import timezone
 import pytz
 
 
-
-class HrPayslipLine(models.Model):
-    _inherit = 'hr.payslip.line'
-
-    salary_rule_id = fields.Many2one('hr.salary.rule', string='Rule', required=False)
-    code = fields.Char(required=False,
-                       help="The code of salary rules can be used as reference in computation of other rules. "
-                       "In that case, it is case sensitive.")
-
-
 class HrPayslip(models.Model):
     _inherit = 'hr.payslip'
 
     absent = fields.Float(string='No of absent Days')
-    basic_salary = fields.Float(string='Basic Salary')
-    house_rent_allowance = fields.Float(string='House Rent Allowance')
-    medical_allowance = fields.Float(string='Medical Allowance')
-    utility_allowance = fields.Float(string='Utility Allowance')
-    gross_salary = fields.Float(string='Gross Salary', compute='_compute_gross_salary', store=True)
-    sick_allowance = fields.Float(string='Sick Allowance')
-    bonus = fields.Float(string='Bonus')
-    incentive_commission = fields.Float(string='Incentive / Commission')
-    travel_allowance = fields.Float(string='Travel Allowance')
-    salary_arrears = fields.Float(string='Salary Arrears')
-    advance_salary = fields.Float(string='Previous Salary')
-    income_tax = fields.Float(string='Income Tax')
-    absent_deduction = fields.Float(string='Absent Deduction')
-    net_salary = fields.Float(string='Net Salary', compute='_compute_net_salary', store=True)
-
-    @api.depends('basic_salary', 'house_rent_allowance', 'medical_allowance', 'utility_allowance')
-    def _compute_gross_salary(self):
-        for record in self:
-            record.gross_salary = record.basic_salary + record.house_rent_allowance + record.medical_allowance + record.utility_allowance
-
-    @api.depends('gross_salary', 'sick_allowance', 'bonus', 'incentive_commission', 'travel_allowance', 'income_tax', 'absent_deduction','salary_arrears')
-    def _compute_net_salary(self):
-        for record in self:
-            deductions = record.income_tax + record.absent_deduction + record.salary_arrears
-            additions = record.sick_allowance + record.bonus + record.incentive_commission + record.travel_allowance
-            record.net_salary = record.gross_salary + additions - deductions
 
     def calculate_absent_days(self):
         # Initialize absent days counter
@@ -237,105 +201,11 @@ class HrPayslip(models.Model):
         # raise UserError(str(test_dict))
         # raise UserError(str(absent_days)+"   "+str(half_day_count)+"  "+str(late_in_count))
         return absent_days
-    
-    
 
 
-    # jfvjsn
-    def calculate_basic(self):
-        per_day_basic_salary =(self.contract_id.wage * 0.59)
-        return per_day_basic_salary
-
-    def calculate_hra(self):
-        per_day_hra =(self.contract_id.wage * 0.292)
-        return  per_day_hra
-
-    def calculate_medical_allowance(self):
-        per_day_ =(self.contract_id.wage * 0.059)
-        return per_day_
-
-    def calculate_utility_allowance(self):
-        per_day_ =(self.contract_id.wage * 0.059)
-        return per_day_
-
-    def calculate_taxes(self):
-        
-        annual_salary = (self.contract_id.wage - (self.contract_id.wage * 0.059)) * 12
-        deduction = 0
-        if annual_salary <= 600000:
-            deduction = 0
-        elif annual_salary >= 600001 and annual_salary <= 1200000:
-            exceed = annual_salary - 600000 
-            deduction = 0.05 * exceed
-        elif annual_salary >= 1200001 and annual_salary <= 2200000:
-            exceed = annual_salary - 1200000 
-            deduction = (0.15 * exceed) + 30000
-        elif annual_salary >= 2200001 and annual_salary <= 3200000:
-            exceed = annual_salary - 2200000 
-            deduction = (0.25 * exceed) + 180000
-        elif annual_salary >= 3200001 and annual_salary <= 4100000:
-            exceed = annual_salary - 3200000 
-            deduction = (0.30 * exceed) + 435000
-
-
-        result = deduction / 12
-        # raise UserError(result)
-        
-        return result
-
-    def calculate_deductions(self):
-        # Placeholder for calculating deductions like absences or penalties
-        per_day_ =(self.contract_id.wage)/30
-        absent_day = self.absent
-        return (absent_day * per_day_)
-
-
-    def calculate_salary_arrears(self):
-        return self.contract_id.salary_arrears
-
-    def calculate_bonus(self):
-    
-        return self.contract_id.bonus
-
-    def calculate_incentive_or_Commission(self):
-
-        return self.contract_id.incentive_commission 
-
-    def calculate_travel_allowance(self):
-
-        return self.contract_id.travel_allowance
-        
-    def calculate_pervious_salary(self):
-
-        return self.contract_id.advance_salary
-        
-    def calculate_sick_allowance(self):
-        if self.employee_id.category_ids:
-            return 0.0
-        if self.absent == 0:
-            per_day_ =(self.contract_id.wage)/30
-            return (per_day_ * 1)
-        else:
-            return 0.0
-
-    
     def compute_sheet(self):
-        # Override to perform final calculations before confirming the payslip
         self.ensure_one()
         self.absent = self.calculate_absent_days()
-        self.basic_salary = self.calculate_basic()
-        self.house_rent_allowance =float( self.calculate_hra())
-        self.medical_allowance = self.calculate_medical_allowance()
-        self.utility_allowance = self.calculate_utility_allowance()
-        self.income_tax = self.calculate_taxes()
-        self.absent_deduction = self.calculate_deductions()
-        self.bonus = self.calculate_bonus()
-        self.sick_allowance = self.calculate_sick_allowance()
-        self.salary_arrears = self.calculate_salary_arrears()
-        self.incentive_commission = self.calculate_incentive_or_Commission()
-        self.travel_allowance = self.calculate_travel_allowance()
-        self.advance_salary = self.calculate_pervious_salary()
-        # self.basic_salary = self.calculate_basic()
         return super(HrPayslip, self).compute_sheet()
 
 

@@ -9,7 +9,6 @@
                 <field name="bonus"/>
                 <field name="incentive_commission"/>
                 <field name="salary_arrears"/>
-                <field name="advance_salary"/>
 
                 <field name="incentive_commission_deduction"/>
                 <field name="salary_arrears_deduction"/>
