@@ -204,8 +204,8 @@ class HrPayslip(models.Model):
 
 
     def compute_sheet(self):
-        self.ensure_one()
-        self.absent = self.calculate_absent_days()
+        for rec in self:
+            rec.absent = rec.calculate_absent_days()
         return super(HrPayslip, self).compute_sheet()
 
 
