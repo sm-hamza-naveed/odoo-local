@@ -65,17 +65,17 @@ class MonthlyPayrollDetailReportWizard(models.TransientModel):
         net_total_number.set_border()
         # sheet.write_merge(1,1,18,23, 'Additions',header_Text)
         # sheet.write_merge(1,1,24,27, 'Deletions',header_Text)
-        sheet.merge_range('S6:W6', 'Additions', main_header_company_range)
-        sheet.merge_range('6:AB6', 'Deletions', main_header_company_range)
+        sheet.merge_range('S6:W6', 'Additions', header_Text)
+        sheet.merge_range('X6:AB6', 'Deletions', header_Text)
 
 
-        sheet.write('A1:AC2' ,"Creative Minds Solutions (Pvt.) Ltd", header_Text)
+        sheet.merge_range('A1:AC2', "Creative Minds Solutions (Pvt.) Ltd", main_header_company_range)
         formatted_date = self.from_date.strftime("%b-%Y")
-        sheet.write('A3:AC4' ,f'For the period: "{formatted_date}"' , header_Text)
+        sheet.merge_range('A3:AC4', f'For the period: "{formatted_date}"' , main_header_company_range)
 
 
-        for i in range(0,20):
-            sheet.set_column(0,i,22)
+        for i in range(0,30):
+            sheet.set_column(0,i,30)
 
         header_row = 6
         sheet.write(header_row,0, 'S.No', header)
