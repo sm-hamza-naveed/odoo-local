@@ -8,8 +8,12 @@
                 <field name="travel_allowance"/>
                 <field name="bonus"/>
                 <field name="incentive_commission"/>
-                <field name="previous_salary"/>
                 <field name="salary_arrears"/>
+                <field name="advance_salary"/>
+
+                <field name="incentive_commission_deduction"/>
+                <field name="salary_arrears_deduction"/>
+                <field name="advance_salary"/>
             </xpath>
         </field>
     </record>

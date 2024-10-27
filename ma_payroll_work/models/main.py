@@ -37,7 +37,7 @@ class HrPayslip(models.Model):
     incentive_commission = fields.Float(string='Incentive / Commission')
     travel_allowance = fields.Float(string='Travel Allowance')
     salary_arrears = fields.Float(string='Salary Arrears')
-    previous_salary = fields.Float(string='Previous Salary')
+    advance_salary = fields.Float(string='Previous Salary')
     income_tax = fields.Float(string='Income Tax')
     absent_deduction = fields.Float(string='Absent Deduction')
     net_salary = fields.Float(string='Net Salary', compute='_compute_net_salary', store=True)
@@ -307,7 +307,7 @@ class HrPayslip(models.Model):
         
     def calculate_pervious_salary(self):
 
-        return self.contract_id.previous_salary
+        return self.contract_id.advance_salary
         
     def calculate_sick_allowance(self):
         if self.employee_id.category_ids:
@@ -334,7 +334,7 @@ class HrPayslip(models.Model):
         self.salary_arrears = self.calculate_salary_arrears()
         self.incentive_commission = self.calculate_incentive_or_Commission()
         self.travel_allowance = self.calculate_travel_allowance()
-        self.previous_salary = self.calculate_pervious_salary()
+        self.advance_salary = self.calculate_pervious_salary()
         # self.basic_salary = self.calculate_basic()
         return super(HrPayslip, self).compute_sheet()
 
@@ -345,5 +345,8 @@ class HrContract(models.Model):
     travel_allowance = fields.Float(string='Travel Allowance')
     bonus = fields.Float(string='Bonus')
     incentive_commission = fields.Float(string='Incentive / Commission')
-    previous_salary = fields.Float(string='Previous Salary')
     salary_arrears = fields.Float(string='Salary Arrears')
+
+    incentive_commission_deduction = fields.Float(string='Incentive / Commission Deduction')
+    salary_arrears_deduction = fields.Float(string='Salary Arrears Deduction')
+    advance_salary = fields.Float(string='Advance Salary Deduction')
