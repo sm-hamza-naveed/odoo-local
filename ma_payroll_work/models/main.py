@@ -220,3 +220,9 @@ class HrContract(models.Model):
     incentive_commission_deduction = fields.Float(string='Incentive / Commission Deduction')
     salary_arrears_deduction = fields.Float(string='Salary Arrears Deduction')
     advance_salary = fields.Float(string='Advance Salary Deduction')
+
+
+class HRSalaryRule(models.Model):
+    _inherit = 'hr.salary.rule'
+
+    category_code = fields.Char(related='category_id.code', string='Category Code')
