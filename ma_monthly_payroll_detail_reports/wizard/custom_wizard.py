@@ -52,6 +52,7 @@ class MonthlyPayrollDetailReportWizard(models.TransientModel):
 
         sheet = workbook.add_worksheet('Monthly Payroll Analysis Sheet - Detailed')
         header = workbook.add_format({'bold': True, 'align':'center','size': 11,'bg_color': '#2a6131','font_color': 'white'})
+        main_header_company_range = workbook.add_format({'bold': True, 'align':'center','size': 18,'bg_color': '#F1D29F'})
         header_Text = workbook.add_format({'bold': True, 'align':'center','size': 11,'bg_color': '#F1D29F'})
         header_number = workbook.add_format({'bold': True, 'align':'right','size': 11,'bg_color': '#F1D29F'})
         header2 = workbook.add_format({'bold': True, 'align':'center','size': 11,'bg_color': '#9FCEF1'})
@@ -64,54 +65,54 @@ class MonthlyPayrollDetailReportWizard(models.TransientModel):
         net_total_number.set_border()
         # sheet.write_merge(1,1,18,23, 'Additions',header_Text)
         # sheet.write_merge(1,1,24,27, 'Deletions',header_Text)
-        sheet.merge_range('S2:W2', 'Additions', header_Text)
-        sheet.merge_range('X2:AB2', 'Deletions', header_Text)
+        sheet.merge_range('S6:W6', 'Additions', main_header_company_range)
+        sheet.merge_range('6:AB6', 'Deletions', main_header_company_range)
 
 
-        sheet.write(0,0,"Creative Minds Solutions (Pvt.) Ltd", header_Text)
+        sheet.write('A1:AC2' ,"Creative Minds Solutions (Pvt.) Ltd", header_Text)
         formatted_date = self.from_date.strftime("%b-%Y")
+        sheet.write('A3:AC4' ,f'For the period: "{formatted_date}"' , header_Text)
 
-        sheet.write(1,0,f'For the period: "{formatted_date}"' , header_Text)
 
         for i in range(0,20):
             sheet.set_column(0,i,22)
 
+        header_row = 6
+        sheet.write(header_row,0, 'S.No', header)
+        sheet.write(header_row,1, 'Employee Id', header)
+        sheet.write(header_row,2, 'Employee Name', header)
+        sheet.write(header_row,3, 'CNIC', header)
+        sheet.write(header_row,4, 'Designation', header)
+        sheet.write(header_row,5, 'Department', header)
+        sheet.write(header_row,6, 'Location', header)
+        sheet.write(header_row,7, 'Date of Joining', header)
+        sheet.write(header_row,8, 'Employment Type', header)
        
-        sheet.write(2,0, 'S.No', header)
-        sheet.write(2,1, 'Employee Id', header)
-        sheet.write(2,2, 'Employee Name', header)
-        sheet.write(2,3, 'CNIC', header)
-        sheet.write(2,4, 'Designation', header)
-        sheet.write(2,5, 'Department', header)
-        sheet.write(2,6, 'Location', header)
-        sheet.write(2,7, 'Date of Joining', header)
-        sheet.write(2,8, 'Employment Type', header)
+        sheet.write(header_row,9, 'Bank Name', header)
+        sheet.write(header_row,10, 'Account No.', header)
+        sheet.write(header_row,11, 'Br. Code', header)
+        sheet.write(header_row,12, 'Present Days', header)
+
+        sheet.write(header_row,13, 'Basic', header)
+        sheet.write(header_row,14, 'HRA', header)
+        sheet.write(header_row,15, 'Utilities', header)
+        sheet.write(header_row,16, 'Medical Allowance', header)
+        sheet.write(header_row,17, 'Gross Salary', header)
+        sheet.write(header_row,18, '01 Day Sick Allowance', header)
+        sheet.write(header_row,19, 'Bonus', header)
+        sheet.write(header_row,20, 'Incentive / Commission', header)
+        sheet.write(header_row,21, 'Travelling Expenses', header)
+        sheet.write(header_row,22, 'Salary Arrears', header)
+
+        sheet.write(header_row,23, 'Advance Salary', header)
+        sheet.write(header_row,24, 'Salary Arrears', header)
+        sheet.write(header_row,25, 'Incentive / Commission', header)
+        sheet.write(header_row,26, 'LWOP Amount', header)
+        sheet.write(header_row,27, 'Income Tax', header)
+
+        sheet.write(header_row,28, 'Net Salary', header)
        
-        sheet.write(2,9, 'Bank Name', header)
-        sheet.write(2,10, 'Account No.', header)
-        sheet.write(2,11, 'Br. Code', header)
-        sheet.write(2,12, 'Present Days', header)
-
-        sheet.write(2,13, 'Basic', header)
-        sheet.write(2,14, 'HRA', header)
-        sheet.write(2,15, 'Utilities', header)
-        sheet.write(2,16, 'Medical Allowance', header)
-        sheet.write(2,17, 'Gross Salary', header)
-        sheet.write(2,18, '01 Day Sick Allowance', header)
-        sheet.write(2,19, 'Bonus', header)
-        sheet.write(2,20, 'Incentive / Commission', header)
-        sheet.write(2,21, 'Travelling Expenses', header)
-        sheet.write(2,22, 'Salary Arrears', header)
-
-        sheet.write(2,23, 'Advance Salary', header)
-        sheet.write(2,24, 'Salary Arrears', header)
-        sheet.write(2,25, 'Incentive / Commission', header)
-        sheet.write(2,26, 'LWOP Amount', header)
-        sheet.write(2,27, 'Income Tax', header)
-
-        sheet.write(2,28, 'Net Salary', header)
-       
-        inv_row, count = 2, 0
+        inv_row, count = 6, 0
 
         if len(datas)!=0:
             for line in datas:
